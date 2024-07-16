@@ -2,9 +2,10 @@ package avlyakulov.timur.task_tracker_api.dto;
 
 import lombok.*;
 
-@Builder
+
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {

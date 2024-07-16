@@ -1,6 +1,5 @@
 package avlyakulov.timur.task_tracker_api.config.security;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
