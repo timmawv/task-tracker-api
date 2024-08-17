@@ -33,8 +33,7 @@ public class User {
     @OneToMany(mappedBy = "owner")
     private List<Task> userTasks;
 
-    public User(String login, String password) {
-        this.login = login;
-        this.password = password;
+    public User(Integer id) {
+        this.id = id;
     }
 }

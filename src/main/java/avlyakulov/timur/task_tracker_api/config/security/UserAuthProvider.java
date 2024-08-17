@@ -8,6 +8,8 @@ import avlyakulov.timur.task_tracker_api.repository.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -39,12 +41,13 @@ public class UserAuthProvider {
 
     public String createToken(UserDto userDto) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 3_600_000);//will be alive for one hour
+        Date validity = new Date(now.getTime() + 3_600_000); //will be alive for one hour
 
         return JWT.create()
                 .withIssuer(userDto.getLogin())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
+                .withClaim("id", userDto.getId())
                 .withClaim("firstName", userDto.getFirstName())
                 .withClaim("lastName", userDto.getLastName())
                 .sign(Algorithm.HMAC256(secretKey));
@@ -54,9 +57,9 @@ public class UserAuthProvider {
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
         JWTVerifier verifier = JWT.require(algorithm).build();
-
         DecodedJWT decoded = verifier.verify(token);
         UserDto user = UserDto.builder()
+                .id(decoded.getClaim("id").asInt())
                 .login(decoded.getIssuer())
                 .firstName(decoded.getClaim("firstName").asString())
                 .lastName(decoded.getClaim("lastName").asString())
@@ -73,7 +76,7 @@ public class UserAuthProvider {
         DecodedJWT decoded = verifier.verify(token);
 
         User user = userRepository.findByLogin(decoded.getIssuer())
-                .orElseThrow(() -> new AppException("Uknown user", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
         return new UsernamePasswordAuthenticationToken(userMapper.toUserDto(user), null, Collections.emptyList());
     }
