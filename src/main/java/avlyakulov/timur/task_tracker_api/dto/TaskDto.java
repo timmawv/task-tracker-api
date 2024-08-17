@@ -10,9 +10,9 @@ import java.util.Date;
 
 @Getter
 @Setter
-@JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TaskDto {
 
     private String id;

@@ -25,8 +25,8 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
 
     @Override
-    public List<Task> findTasksByUserId(Integer userId) {
-        return taskRepository.findAllByOwnerId(userId);
+    public List<TaskDto> findTasksByUserId(Integer userId) {
+        return taskMapper.toListTaskDto(taskRepository.findAllByOwnerId(userId));
     }
 
     @Override
@@ -38,12 +38,37 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDto createTaskByUserId(TaskDto taskDto, Integer userId) {
         Task task = taskMapper.taskDtoToTask(taskDto);
-        UUID uuid = UUID.randomUUID();
-        String uuidAsString = uuid.toString();
-        task.setId(uuidAsString);
+        task.setId(UUID.randomUUID().toString());
         task.setCreatedAt(Date.from(Instant.now()));
         task.setIsCompleted(false);
         task.setOwner(new User(userId));
+        taskRepository.save(task);
+        return taskMapper.taskToDto(task);
+    }
+
+    @Override
+    public TaskDto editTask(TaskDto taskDto, Integer userId) {
+        Task task = findTaskByTaskIdAndUserId(taskDto.getId(), userId);
+        task.setTitle(taskDto.getTitle());
+        task.setDescription(taskDto.getDescription());
+        taskRepository.save(task);
+        return taskMapper.taskToDto(task);
+    }
+
+    @Override
+    public TaskDto finishTask(String id, Integer userId) {
+        Task task = findTaskByTaskIdAndUserId(id, userId);
+        task.setFinishedAt(Date.from(Instant.now()));
+        task.setIsCompleted(true);
+        taskRepository.save(task);
+        return taskMapper.taskToDto(task);
+    }
+
+    @Override
+    public TaskDto restartTask(String id, Integer userId) {
+        Task task = findTaskByTaskIdAndUserId(id, userId);
+        task.setFinishedAt(null);
+        task.setIsCompleted(false);
         taskRepository.save(task);
         return taskMapper.taskToDto(task);
     }

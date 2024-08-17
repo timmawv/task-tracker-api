@@ -7,9 +7,15 @@ import java.util.List;
 
 public interface TaskService {
 
-    List<Task> findTasksByUserId(Integer userId);
+    List<TaskDto> findTasksByUserId(Integer userId);
 
     Task findTaskByTaskIdAndUserId(String taskId, Integer userId);
 
     TaskDto createTaskByUserId(TaskDto taskDto, Integer userId);
+
+    TaskDto editTask(TaskDto taskDto, Integer userId);
+
+    TaskDto finishTask(String id, Integer userId);
+
+    TaskDto restartTask(String id, Integer userId);
 }

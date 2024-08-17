@@ -19,8 +19,8 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<List<Task>> getListTask(@AuthenticationPrincipal UserDto userDto) {
-        List<Task> tasks = taskService.findTasksByUserId(userDto.getId());
+    public ResponseEntity<List<TaskDto>> getListTask(@AuthenticationPrincipal UserDto userDto) {
+        List<TaskDto> tasks = taskService.findTasksByUserId(userDto.getId());
         return ResponseEntity.ok(tasks);
     }
 
@@ -34,5 +34,24 @@ public class TaskController {
     public ResponseEntity<TaskDto> createTask(@AuthenticationPrincipal UserDto userDto, @RequestBody TaskDto taskDto) {
         TaskDto taskByUserId = taskService.createTaskByUserId(taskDto, userDto.getId());
         return ResponseEntity.ok(taskByUserId);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskDto> editTask(@AuthenticationPrincipal UserDto userDto, @PathVariable String id, @RequestBody TaskDto taskDto) {
+        taskDto.setId(id);
+        TaskDto task = taskService.editTask(taskDto, userDto.getId());
+        return ResponseEntity.ok(task);
+    }
+
+    @PatchMapping("/{id}/finish")
+    public ResponseEntity<TaskDto> finishTask(@AuthenticationPrincipal UserDto userDto, @PathVariable("id") String id) {
+        TaskDto taskDto = taskService.finishTask(id, userDto.getId());
+        return ResponseEntity.ok(taskDto);
+    }
+
+    @PatchMapping("/{id}/restart")
+    public ResponseEntity<TaskDto> restartTask(@AuthenticationPrincipal UserDto userDto, @PathVariable("id") String id) {
+        TaskDto taskDto = taskService.restartTask(id, userDto.getId());
+        return ResponseEntity.ok(taskDto);
     }
 }
